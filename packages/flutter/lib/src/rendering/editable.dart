@@ -240,6 +240,7 @@ class RenderEditable extends RenderBox with RelayoutWhenSystemFontsChangeMixin, 
   /// The [textDirection] argument must not be null.
   ///
   /// If [showCursor] is not specified, then it defaults to hiding the cursor.
+  /// If [readOnly] is true, [showCursor] must be disabled.
   ///
   /// The [maxLines] property can be set to null to remove the restriction on
   /// the number of lines. By default, it is 1, meaning this is a single-line
@@ -358,6 +359,10 @@ class RenderEditable extends RenderBox with RelayoutWhenSystemFontsChangeMixin, 
        _hasFocus = hasFocus ?? false {
     assert(_showCursor != null);
     assert(!_showCursor.value || cursorColor != null);
+    assert(
+      !_readOnly || (_readOnly && !_showCursor.value),
+      "showCursor can't be combined with readOnly."
+    );
 
     _selectionPainter.highlightColor = selectionColor;
     _selectionPainter.highlightedRange = selection;
@@ -1239,7 +1244,7 @@ class RenderEditable extends RenderBox with RelayoutWhenSystemFontsChangeMixin, 
   double get maxScrollExtent => _maxScrollExtent;
   double _maxScrollExtent = 0;
 
-  double get _caretMargin => _kCaretGap + cursorWidth;
+  double get _caretMargin => !readOnly ? _kCaretGap + cursorWidth : 0.0;
 
   /// {@macro flutter.material.Material.clipBehavior}
   ///
